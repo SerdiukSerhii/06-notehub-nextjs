@@ -1,69 +1,26 @@
-import { useState } from 'react';
-import { useDebouncedCallback } from 'use-debounce';
-import { useQuery, keepPreviousData } from '@tanstack/react-query';
+import { QueryClient, dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { fetchNotes } from '@/lib/api';
+import NotesClient from './Notes.client';
+import type { Metadata } from 'next';
 
-import Modal from '@/components/Modal/Modal';
-import NoteList from '@/components/NoteList/NoteList';
-import Pagination from '@/components/Pagination/Pagination';
-import SearchBox from '@/components/SearchBox/SearchBox';
-import NoteForm from '@/components/NoteForm/NoteForm';
+export const metadata: Metadata = {
+  title: 'Notes',
+  description: 'Your personal notes list',
+};
 
-import css from './NotesPage.module.css';
+const Notes = async () => {
+  const queryClient = new QueryClient();
 
-function App() {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const { data } = useQuery({
-    queryKey: ['notes', searchQuery, currentPage],
-    queryFn: () => fetchNotes(searchQuery, currentPage),
-    placeholderData: keepPreviousData,
+  await queryClient.prefetchQuery({
+    queryKey: ['notes', { search: '', page: 1 }],
+    queryFn: () => fetchNotes('', 1),
   });
 
-  const totalPages = data?.totalPages ?? 0;
-  const notes = data?.notes ?? [];
-
-  // ----------Оновлює пошук і скидає сторінку на першу----------
-  const handleSearch = useDebouncedCallback((newSearchValue: string) => {
-    setSearchQuery(newSearchValue);
-    setCurrentPage(1);
-  }, 1000);
-
   return (
-    <div className={css.app}>
-      <header className={css.toolbar}>
-        <SearchBox
-          inputValue={searchQuery}
-          onChange={handleSearch}
-        />
-
-        {totalPages > 1 && (
-          <Pagination
-            totalPages={totalPages}
-            currentPage={currentPage}
-            onPageChange={setCurrentPage}
-          />
-        )}
-
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className={css.button}
-        >
-          Create note +
-        </button>
-      </header>
-
-      {notes.length > 0 && <NoteList notes={notes} />}
-
-      {isModalOpen && (
-        <Modal onClose={() => setIsModalOpen(false)}>
-          <NoteForm onClose={() => setIsModalOpen(false)} />
-        </Modal>
-      )}
-    </div>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <NotesClient />
+    </HydrationBoundary>
   );
-}
+};
 
-export default App;
+export default Notes;
