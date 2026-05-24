@@ -34,7 +34,7 @@ function NotesClient() {
   }, 1000);
 
   return (
-    <div className={css.app}>
+    <main className={css.app}>
       <header className={css.toolbar}>
         <SearchBox
           inputValue={searchQuery}
@@ -66,7 +66,7 @@ function NotesClient() {
           <NoteForm onClose={() => setIsModalOpen(false)} />
         </Modal>
       )}
-    </div>
+    </main>
   );
 }
 

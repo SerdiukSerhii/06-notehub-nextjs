@@ -16,6 +16,7 @@ const NoteDetailsClient = () => {
   } = useQuery({
     queryKey: ['note', id],
     queryFn: () => fetchNoteById(id),
+    refetchOnMount: false,
   });
 
   if (isLoading) return <p>Loading, please wait..</p>;
@@ -27,7 +28,7 @@ const NoteDetailsClient = () => {
     : `Created at: ${note.createdAt}`;
 
   return (
-    <div className={css.main}>
+    <main className={css.main}>
       <div className={css.container}>
         <div className={css.item}>
           <div className={css.header}>
@@ -38,7 +39,7 @@ const NoteDetailsClient = () => {
           <p className={css.date}>{formattedDate}</p>
         </div>
       </div>
-    </div>
+    </main>
   );
 };
 
