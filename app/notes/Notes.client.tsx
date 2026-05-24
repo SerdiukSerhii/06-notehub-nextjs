@@ -34,39 +34,41 @@ function NotesClient() {
   }, 1000);
 
   return (
-    <main className={css.app}>
-      <header className={css.toolbar}>
-        <SearchBox
-          inputValue={searchQuery}
-          onChange={handleSearch}
-        />
-
-        {totalPages > 1 && (
-          <Pagination
-            totalPages={totalPages}
-            currentPage={currentPage}
-            onPageChange={setCurrentPage}
+    <section>
+      <div className={css.app}>
+        <header className={css.toolbar}>
+          <SearchBox
+            inputValue={searchQuery}
+            onChange={handleSearch}
           />
+
+          {totalPages > 1 && (
+            <Pagination
+              totalPages={totalPages}
+              currentPage={currentPage}
+              onPageChange={setCurrentPage}
+            />
+          )}
+
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className={css.button}
+          >
+            Create note +
+          </button>
+        </header>
+
+        {isFetching && <p>Loading...</p>}
+
+        {notes.length > 0 && <NoteList notes={notes} />}
+
+        {isModalOpen && (
+          <Modal onClose={() => setIsModalOpen(false)}>
+            <NoteForm onClose={() => setIsModalOpen(false)} />
+          </Modal>
         )}
-
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className={css.button}
-        >
-          Create note +
-        </button>
-      </header>
-
-      {isFetching && <p>Loading...</p>}
-
-      {notes.length > 0 && <NoteList notes={notes} />}
-
-      {isModalOpen && (
-        <Modal onClose={() => setIsModalOpen(false)}>
-          <NoteForm onClose={() => setIsModalOpen(false)} />
-        </Modal>
-      )}
-    </main>
+      </div>
+    </section>
   );
 }
 
